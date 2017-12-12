@@ -55,23 +55,34 @@ function handleTaskCheckClick() {
     });
 }
 
+function handleEditTaskFormSubmit(event) {
+  event.preventDefault();
+  console.log($('#txtUpdateTask').val());
+}
+
 // Function to handle click on an edit element for a task
 function handleEditTaskClick() {
-  // when the user clicks on an edit button
-  // get the id for the task that was clicked
+  // populate form with task data
+  var task = $(this).data();
+  $('#txtUpdateTask').val(task.text);
+
   // display a form to edit the task
+  $('#editTaskModal').modal();
   // when user clicks ok
+
+  $('#editTaskForm').data(task).on('submit', handleEditTaskFormSubmit);
+
+
   // update the task and close the form
   // when user clicks cancel
   // close the form without updating the task
-  console.log(this);
 }
 
 // set event listeners
 $(document).on('click', '.glyphicon-edit', handleEditTaskClick);
 $(document).on('click', '.glyphicon-unchecked', handleTaskCheckClick);
 $(function onDocumentReady() {
-  $('form').on('submit', handleAddTaskFormSubmit);
+  $('#addTaskForm').on('submit', handleAddTaskFormSubmit);
 
   // append task to page when added to database
   tasksRef.on('child_added', function handleTaskAdded(childSnap) {
