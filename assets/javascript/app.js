@@ -41,12 +41,6 @@ function appendNewTask(newTask) {
   return $('<li class="list-group-item"></li>').append($row).appendTo('.list-group');
 }
 
-// Function to update the text of a task in the todo list by id
-function renderTask(taskData) {
-  console.log('rendering task', taskData);
-  $('#' + taskData.key).text(taskData.text);
-}
-
 // Function adds user input from add task form and clears the form.
 function handleAddTaskFormSubmit(event) {
   event.preventDefault();
