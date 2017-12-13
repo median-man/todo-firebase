@@ -4,7 +4,7 @@ var tasksRef = database.ref('/tasks');
 
 var task = {
   create: function createNewTask(text) {
-    var newTaskRef = tasksRef.push(text);
+    var newTaskRef = tasksRef.push({ text: text });
     return {
       key: newTaskRef.key, // keep things es5 compatible
       text: text
@@ -16,12 +16,16 @@ var task = {
   },
   // method updates task from the database and returns promise
   // passing an object with the key and new text
-  update: function updateTask(key, text) {
+  update: function updateTask(key, text, isComplete) {
+    var data = {};
+    if (text) data.text = text;
+    if (isComplete) data.isComplete = true;
     return tasksRef
       .child(key)
-      .set(text)
+      .update(data)
       .then(function () {
-        return { key: key, text: text };
+        data.key = key;
+        return data;
       });
   }
 };
@@ -41,6 +45,28 @@ function appendNewTask(newTask) {
   return $('<li class="list-group-item"></li>').append($row).appendTo('.list-group');
 }
 
+// Function to update a task element
+function renderTask(key, text, isComplete) {
+  var selector = '#' + key;
+  text = ' ' + text;
+  
+  if (isComplete) {
+    // place completed task text inside an s element and apply class
+    $(selector)
+      .empty()
+      .append($('<s>').text(text))
+      .parents('li')
+      .addClass('completed')
+      // toggle checked icon
+      .find('glyphicon-unchecked')
+      .removeClass('glyphicon-unchecked')
+      .addClass('glyphicon-checked');
+  } else {
+    // update the text
+    $(selector).text(' ' + text);
+  }
+}
+
 // Function adds user input from add task form
 function handleAddTaskFormSubmit(event) {
   event.preventDefault();
@@ -50,10 +76,17 @@ function handleAddTaskFormSubmit(event) {
   task.create(newTask);
 }
 
-// Function to remove a task when the task is marked complete
-function handleTaskCheckClick() {
+// Function to handle remove task clicked by user
+function handleDeleteTaskClick() {
   var key = $(this).data('key');
   task.delete(key);
+}
+
+// Function to toggle a task's isComplete state
+function handleTaskCheckClick() {
+  var key = $(this).data('key');
+  var isComplete = !$(this).hasClass('glyphicon-checked');
+  task.update(key, false, isComplete);
 }
 
 function handleEditTaskFormSubmit(event) {
@@ -86,13 +119,15 @@ $(function onDocumentReady() {
 
   // append task to page when added to database
   tasksRef.on('child_added', function (childSnap) {
-    appendNewTask({ key: childSnap.key, text: childSnap.val() });
+    var taskData = childSnap.val();
+    taskData.key = childSnap.key;
+    appendNewTask(taskData);
   });
 
-  // if the text for a task is changed, update it on the page
+  // if a task's data is changed, update it on the page
   tasksRef.on('child_changed', function (childSnap) {
-    var selector = '#' + childSnap.key;
-    $(selector).text(' ' + childSnap.val());
+    console.log(childSnap.key, childSnap.val());
+    renderTask(childSnap.key, childSnap.val().text, childSnap.child('isComplete').exists());
   });
 
   // when a task is removed from the database, remove it from the page
