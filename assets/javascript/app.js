@@ -32,7 +32,7 @@ function appendNewTask(newTask) {
     class: 'glyphicon glyphicon-unchecked',
     data: newTask
   });
-  // give the span holding the text of the task an id equal to the key
+  // use the key of the task as the id for the span holding the text
   var $textSpan = $('<span>').attr('id', newTask.key).text(' ' + newTask.text);
   var $edit = $('<span>').addClass('glyphicon glyphicon-edit pull-right').data(newTask);
   var $col1 = $('<div>').addClass('col-xs-9').append($checkBox, $textSpan);
@@ -41,7 +41,7 @@ function appendNewTask(newTask) {
   return $('<li class="list-group-item"></li>').append($row).appendTo('.list-group');
 }
 
-// Function adds user input from add task form and clears the form.
+// Function adds user input from add task form
 function handleAddTaskFormSubmit(event) {
   event.preventDefault();
   var $newTaskInput = $('#txtNewTask');
@@ -50,16 +50,10 @@ function handleAddTaskFormSubmit(event) {
   task.create(newTask);
 }
 
-// Function to handle click on task check box
+// Function to remove a task when the task is marked complete
 function handleTaskCheckClick() {
-  // remove the task from the database for the key
   var key = $(this).data('key');
-  task
-    .delete(key)
-    .then(function deleteTaskElement() {
-      // remove the task from the page
-      $('#' + key).parents('li').remove();
-    });
+  task.delete(key);
 }
 
 function handleEditTaskFormSubmit(event) {
@@ -75,33 +69,35 @@ function handleEditTaskFormSubmit(event) {
   $('#editTaskModal').modal('hide');
 }
 
-// Function to handle click on an edit element for a task
-function handleEditTaskClick() {
-  // populate form with task data
+// Function shows the edit task modal
+function showEditTaskModal() {
+  // populate form with task data and show modal
   var task = $(this).data();
   $('#txtUpdateTask').val(task.text).data(task);
-
-  // display a form to edit the task
   $('#editTaskModal').modal();
-  // when user clicks ok
-
-  $('#editTaskForm').data(task).on('submit', handleEditTaskFormSubmit);
 }
 
-// set event listeners
-$(document).on('click', '.glyphicon-edit', handleEditTaskClick);
-$(document).on('click', '.glyphicon-unchecked', handleTaskCheckClick);
 $(function onDocumentReady() {
+  // set event listeners
+  $(document).on('click', '.glyphicon-edit', showEditTaskModal);
+  $(document).on('click', '.glyphicon-unchecked', handleTaskCheckClick);
   $('#addTaskForm').on('submit', handleAddTaskFormSubmit);
+  $('#editTaskForm').data(task).on('submit', handleEditTaskFormSubmit);
 
   // append task to page when added to database
-  tasksRef.on('child_added', function handleTaskAdded(childSnap) {
+  tasksRef.on('child_added', function (childSnap) {
     appendNewTask({ key: childSnap.key, text: childSnap.val() });
+  });
 
-    // render any changes to the task data
-    childSnap.ref.on('value', function (snap) {
-      // update the displayed text if snap wasn't deleted
-      if (snap.val()) $('#' + snap.key).text(' ' + snap.val());
-    });
+  // if the text for a task is changed, update it on the page
+  tasksRef.on('child_changed', function (childSnap) {
+    var selector = '#' + childSnap.key;
+    $(selector).text(' ' + childSnap.val());
+  });
+
+  // when a task is removed from the database, remove it from the page
+  tasksRef.on('child_removed', function (childSnap) {
+    var selector = '#' + childSnap.key;
+    $(selector).parents('li').remove();
   });
 });
