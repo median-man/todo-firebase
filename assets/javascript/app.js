@@ -31,21 +31,23 @@ var task = {
 };
 
 // Function to update a task element
-function renderTask(key, text, isComplete) {
-  var selector = '#' + key;
-  text = ' ' + text;
+function renderTask(taskData) {
+  var selector = '#' + taskData.key;
+  taskData.text = ' ' + taskData.text;
   
   if (isComplete) {
     // place completed task text inside an s element and apply class
     $(selector)
-      .empty()
-      .append($('<s>').text(text))
-      .parents('li')
-      .addClass('completed')
-      // toggle checked icon
-      .find('.glyphicon-unchecked')
-      .removeClass('glyphicon-unchecked')
-      .addClass('glyphicon-check');
+      .data({})
+    // $(selector)
+    //   .empty()
+    //   .append($('<s>').text(text))
+    //   .parents('li')
+    //   .addClass('completed')
+    //   // toggle checked icon
+    //   .find('.glyphicon-unchecked')
+    //   .removeClass('glyphicon-unchecked')
+    //   .addClass('glyphicon-check');
   } else {
     // update the text
     $(selector).text(' ' + text);
@@ -54,20 +56,32 @@ function renderTask(key, text, isComplete) {
 
 // Function to create new html element for a task and append it to the task list
 function appendNewTask(newTask) {
-  var $checkBox = $('<span>', {
-    class: 'glyphicon glyphicon-unchecked',
-    data: newTask
-  });
-  // use the key of the task as the id for the span holding the text
-  var $textSpan = $('<span>').attr('id', newTask.key).text(' ' + newTask.text);
-  var $edit = $('<span>').addClass('glyphicon glyphicon-edit pull-right').data(newTask);
+  // place task inside an <s> element if task is completed
+  newTask.text = ' ' + newTask.text;
+  var $textSpan = $('<span>');
+  if (newTask.isComplete) {
+    $('<s>').text(newTask.text).appendTo($textSpan);
+  } else {
+    $textSpan.text(newTask.text);
+  }
+  
+  var $checkBox = $('<span>').addClass('glyphicon glyphicon-' + (newTask.isComplete ? 'check' : 'unchecked'));
+  var $edit = $('<span>').addClass('glyphicon glyphicon-edit pull-right');
   var $col1 = $('<div>').addClass('col-xs-9').append($checkBox, $textSpan);
   var $col2 = $('<div>').addClass('col-xs-3').append($edit);
   var $row = $('<div>').addClass('row').append($col1, $col2);
-  $('<li class="list-group-item"></li>').append($row).appendTo('.list-group');
+  $('<li></li>', {
+    class: 'list-group-item' + (newTask.isComplete ? ' completed' : ''),
+    id: newTask.key
+  }).append($row)
+    .appendTo('.list-group')
+    // task data stored with li element
+    .data(newTask);
+}
 
-  // if the task is marked complete, call the render function
-  if (newTask.isComplete) renderTask(newTask.key, newTask.text, newTask.isComplete);
+// Function to get data stored in task element containing child element paremeter
+function getTaskData(childEl) {
+  return $(childEl).parents('li').data();
 }
 
 // Function adds user input from add task form
@@ -81,15 +95,13 @@ function handleAddTaskFormSubmit(event) {
 
 // Function to handle remove task clicked by user
 function handleDeleteTaskClick() {
-  var key = $(this).data('key');
-  task.delete(key);
+  task.delete(getTaskData(this).key);
 }
 
 // Function to toggle a task's isComplete state
 function handleTaskCheckClick() {
-  var key = $(this).data('key');
-  var isComplete = !$(this).hasClass('glyphicon-check');
-  task.update(key, false, isComplete);
+  var taskData = getTaskData(this);
+  task.update(taskData.key, false, !taskData.isComplete);
 }
 
 function handleEditTaskFormSubmit(event) {
