@@ -30,21 +30,6 @@ var task = {
   }
 };
 
-// Function to create new html element for a task and append it to the task list
-function appendNewTask(newTask) {
-  var $checkBox = $('<span>', {
-    class: 'glyphicon glyphicon-unchecked',
-    data: newTask
-  });
-  // use the key of the task as the id for the span holding the text
-  var $textSpan = $('<span>').attr('id', newTask.key).text(' ' + newTask.text);
-  var $edit = $('<span>').addClass('glyphicon glyphicon-edit pull-right').data(newTask);
-  var $col1 = $('<div>').addClass('col-xs-9').append($checkBox, $textSpan);
-  var $col2 = $('<div>').addClass('col-xs-3').append($edit);
-  var $row = $('<div>').addClass('row').append($col1, $col2);
-  return $('<li class="list-group-item"></li>').append($row).appendTo('.list-group');
-}
-
 // Function to update a task element
 function renderTask(key, text, isComplete) {
   var selector = '#' + key;
@@ -58,13 +43,31 @@ function renderTask(key, text, isComplete) {
       .parents('li')
       .addClass('completed')
       // toggle checked icon
-      .find('glyphicon-unchecked')
+      .find('.glyphicon-unchecked')
       .removeClass('glyphicon-unchecked')
-      .addClass('glyphicon-checked');
+      .addClass('glyphicon-check');
   } else {
     // update the text
     $(selector).text(' ' + text);
   }
+}
+
+// Function to create new html element for a task and append it to the task list
+function appendNewTask(newTask) {
+  var $checkBox = $('<span>', {
+    class: 'glyphicon glyphicon-unchecked',
+    data: newTask
+  });
+  // use the key of the task as the id for the span holding the text
+  var $textSpan = $('<span>').attr('id', newTask.key).text(' ' + newTask.text);
+  var $edit = $('<span>').addClass('glyphicon glyphicon-edit pull-right').data(newTask);
+  var $col1 = $('<div>').addClass('col-xs-9').append($checkBox, $textSpan);
+  var $col2 = $('<div>').addClass('col-xs-3').append($edit);
+  var $row = $('<div>').addClass('row').append($col1, $col2);
+  $('<li class="list-group-item"></li>').append($row).appendTo('.list-group');
+
+  // if the task is marked complete, call the render function
+  if (newTask.isComplete) renderTask(newTask.key, newTask.text, newTask.isComplete);
 }
 
 // Function adds user input from add task form
@@ -85,7 +88,7 @@ function handleDeleteTaskClick() {
 // Function to toggle a task's isComplete state
 function handleTaskCheckClick() {
   var key = $(this).data('key');
-  var isComplete = !$(this).hasClass('glyphicon-checked');
+  var isComplete = !$(this).hasClass('glyphicon-check');
   task.update(key, false, isComplete);
 }
 
@@ -126,7 +129,6 @@ $(function onDocumentReady() {
 
   // if a task's data is changed, update it on the page
   tasksRef.on('child_changed', function (childSnap) {
-    console.log(childSnap.key, childSnap.val());
     renderTask(childSnap.key, childSnap.val().text, childSnap.child('isComplete').exists());
   });
 
