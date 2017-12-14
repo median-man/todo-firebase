@@ -2,7 +2,7 @@
 A To Do list application built with Firebase. Create, update, and check off tasks. List is shared by all users of the application.
 
 ## How to Use the App
-Use the form to add tasks. Click on link to edit. Click on check mark to marke the task complete, removing it from the list.
+Use the form to add tasks. Click on edit icon to modify the task. Click on check box to mark the task complete. Remove a task by clicking on the trash can icon.
 
 ## Future Development Ideas
 * Choose a list to view instead of only one list for all users to interact with.
