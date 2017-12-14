@@ -49,48 +49,57 @@ function renderTask(taskData) {
   var $textSpan = $li.find('span').eq(1);
   var text = ' ' + taskData.text;
 
-  // update the stored taskData
-  $li.data(taskData);
-  
-  if (taskData.isComplete) {
-    // place completed task text inside an s element and apply styles to li
-    $textSpan.empty().append($('<s>').text(text));
-    createGlyphicon('check').replaceAll($checkBox);
-    $li.addClass('completed');
-  } else {
-    // update the text and style li
-    $textSpan.empty().text(text);
-    createGlyphicon('unchecked').replaceAll($checkBox);
-    $li.removeClass('completed');
-  }
+  // fade out the task
+  $li.fadeOut('fast', function () {
+    if (taskData.isComplete) {
+      // place completed task text inside an s element and apply styles to li
+      $textSpan.empty().append($('<s>').text(text));
+      createGlyphicon('check').replaceAll($checkBox);
+      $li.addClass('completed');
+    } else {
+      // update the text and style li
+      $textSpan.empty().text(text);
+      createGlyphicon('unchecked').replaceAll($checkBox);
+      $li.removeClass('completed');
+    }
+    // update the stored taskData
+    $li.data(taskData);
+
+    // fade in the task
+    $li.fadeIn();
+  });  
 }
 
 // Function to create new html element for a task and append it to the task list
 function appendNewTask(newTask) {
-  // place task inside an <s> element if task is completed
   var $textSpan = $('<span>');
-  var text = ' ' + newTask.text;
+  var text = ' ' + newTask.text;  
+  var $checkBox = newTask.isComplete ? createGlyphicon('check') : createGlyphicon('unchecked');
+  var $editLi = $('<li>').append(createGlyphicon('edit'));
+  var $trashLi = $('<li>').append(createGlyphicon('trash'));
+  var $actionList = $('<ul>').addClass('list-inline pull-right').append($trashLi, $editLi);
+  var $col1 = $('<div>').addClass('col-xs-9 col-sm-10 col-md-11').append($checkBox, $textSpan);
+  var $col2 = $('<div>').addClass('col-xs-3 col-sm-2 col-md-1').append($actionList);
+  var $row = $('<div>').addClass('row').append($col1, $col2);
+  var $collapseDiv = $('<div class="collapse">').append($row);
+
   if (newTask.isComplete) {
+    // place task inside an <s> element if task is completed
     $('<s>').text(text).appendTo($textSpan);
   } else {
     $textSpan.text(text);
   }
-  
-  var $checkBox = newTask.isComplete ? createGlyphicon('check') : createGlyphicon('unchecked');
-  var $editLi = $('<li>').append(createGlyphicon('edit'));
-  var $trashLi = $('<li>').append(createGlyphicon('trash'));
-  var $actionList = $('<ul>').addClass('list-inline').append($trashLi, $editLi);
-  var $col1 = $('<div>').addClass('col-xs-10').append($checkBox, $textSpan);
-  var $col2 = $('<div>').addClass('col-xs-2').append($actionList);
-  var $row = $('<div>').addClass('row').append($col1, $col2);
 
   $('<li></li>', {
     class: 'list-group-item task' + (newTask.isComplete ? ' completed' : ''),
     id: newTask.key
-  }).append($row)
+  }).append($collapseDiv)
     .appendTo('.list-group')
     // task data stored with li element
     .data(newTask);
+
+  // show the collapse
+  $collapseDiv.collapse('show');
 }
 
 // Function to get data stored in task element containing the childEl parameter
