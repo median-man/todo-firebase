@@ -165,7 +165,7 @@ $(function onDocumentReady() {
   $(document).on('click', '.glyphicon-unchecked', handleTaskCheckClick);
   $(document).on('click', '.glyphicon-trash', handleDeleteTaskClick);
   $('#addTaskForm').on('submit', handleAddTaskFormSubmit);
-  $('#editTaskForm').data(task).on('submit', handleEditTaskFormSubmit);
+  $('#editTaskForm').on('submit', handleEditTaskFormSubmit);
 
   // set event listeners for database events
   // append task to page when added to database
