@@ -128,7 +128,7 @@ function handleEditTaskFormSubmit(event) {
 // Function shows the edit task modal
 function showEditTaskModal() {
   // populate form with task data and show modal
-  var task = $(this).data();
+  var task = getTaskData(this);
   $('#txtUpdateTask').val(task.text).data(task);
   $('#editTaskModal').modal();
 }
