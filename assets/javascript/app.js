@@ -62,22 +62,24 @@ function createGlyphicon(glyph) {
 // Function to create new html element for a task and append it to the task list
 function appendNewTask(newTask) {
   // place task inside an <s> element if task is completed
-  newTask.text = ' ' + newTask.text;
   var $textSpan = $('<span>');
+  var text = ' ' + newTask.text;
   if (newTask.isComplete) {
-    $('<s>').text(newTask.text).appendTo($textSpan);
+    $('<s>').text(text).appendTo($textSpan);
   } else {
-    $textSpan.text(newTask.text);
+    $textSpan.text(text);
   }
   
   var $checkBox = newTask.isComplete ? createGlyphicon('check') : createGlyphicon('unchecked');
-  var $edit = createGlyphicon('edit').addClass('pull-right');
-  var $trash = createGlyphicon('trash').addClass('pull-right');
-  var $col1 = $('<div>').addClass('col-xs-9').append($checkBox, $textSpan);
-  var $col2 = $('<div>').addClass('col-xs-3').append($edit);
+  var $editLi = $('<li>').append(createGlyphicon('edit'));
+  var $trashLi = $('<li>').append(createGlyphicon('trash'));
+  var $actionList = $('<ul>').addClass('list-inline').append($trashLi, $editLi);
+  var $col1 = $('<div>').addClass('col-xs-10').append($checkBox, $textSpan);
+  var $col2 = $('<div>').addClass('col-xs-2').append($actionList);
   var $row = $('<div>').addClass('row').append($col1, $col2);
+
   $('<li></li>', {
-    class: 'list-group-item' + (newTask.isComplete ? ' completed' : ''),
+    class: 'list-group-item task' + (newTask.isComplete ? ' completed' : ''),
     id: newTask.key
   }).append($row)
     .appendTo('.list-group')
@@ -87,7 +89,7 @@ function appendNewTask(newTask) {
 
 // Function to get data stored in task element containing child element paremeter
 function getTaskData(childEl) {
-  return $(childEl).parents('li').data();
+  return $(childEl).parents('li.task').data();
 }
 
 // Function adds user input from add task form
