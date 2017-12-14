@@ -33,24 +33,22 @@ var task = {
 // Function to update a task element
 function renderTask(taskData) {
   var selector = '#' + taskData.key;
+  var $li = $(selector);
+  var $checkBox = $li.find('.glyphicon-unchecked', '.glyphicon-check');
+  var $textSpan = $li.find('span').eq(1);
+
   taskData.text = ' ' + taskData.text;
   
-  if (isComplete) {
-    // place completed task text inside an s element and apply class
-    $(selector)
-      .data({})
-    // $(selector)
-    //   .empty()
-    //   .append($('<s>').text(text))
-    //   .parents('li')
-    //   .addClass('completed')
-    //   // toggle checked icon
-    //   .find('.glyphicon-unchecked')
-    //   .removeClass('glyphicon-unchecked')
-    //   .addClass('glyphicon-check');
+  if (taskData.isComplete) {
+    // place completed task text inside an s element and apply styles to li
+    $textSpan.empty().append($('<s>').text(taskData.text));
+    $li.addClass('completed');
+    $checkBox.removeClass('glyphicon-unchecked').addClass('glyphicon-check');
   } else {
-    // update the text
-    $(selector).text(' ' + text);
+    // update the text and style li
+    $textSpan.empty().text(taskData.text);
+    $li.removeClass('completed');
+    $checkBox.removeClass('glyphicon-check').addClass('glyphicon-unchecked');
   }
 }
 
@@ -141,7 +139,11 @@ $(function onDocumentReady() {
 
   // if a task's data is changed, update it on the page
   tasksRef.on('child_changed', function (childSnap) {
-    renderTask(childSnap.key, childSnap.val().text, childSnap.child('isComplete').exists());
+    renderTask({
+      key: childSnap.key,
+      text: childSnap.val().text,
+      isComplete: childSnap.child('isComplete').exists()
+    });
   });
 
   // when a task is removed from the database, remove it from the page
