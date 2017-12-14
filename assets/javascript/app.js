@@ -2,6 +2,9 @@
 var database = firebase.database();
 var tasksRef = database.ref('/tasks');
 
+/* 
+  task object contains methods to update database
+*/
 var task = {
   create: function createNewTask(text) {
     var newTaskRef = tasksRef.push({ text: text });
@@ -30,6 +33,14 @@ var task = {
   }
 };
 
+/* 
+  functions for creating html and manipulating the page
+*/
+// Function to create a bootstrap3 glpyhicon
+function createGlyphicon(glyph) {
+  return $('<span>').addClass('glyphicon glyphicon-' + glyph);
+}
+
 // Function to update a task element
 function renderTask(taskData) {
   var selector = '#' + taskData.key;
@@ -52,11 +63,6 @@ function renderTask(taskData) {
     createGlyphicon('unchecked').replaceAll($checkBox);
     $li.removeClass('completed');
   }
-}
-
-// Function to create a bootstrap3 glpyhicon
-function createGlyphicon(glyph) {
-  return $('<span>').addClass('glyphicon glyphicon-' + glyph);
 }
 
 // Function to create new html element for a task and append it to the task list
@@ -87,7 +93,8 @@ function appendNewTask(newTask) {
     .data(newTask);
 }
 
-// Function to get data stored in task element containing child element paremeter
+// Function to get data stored in task element containing the childEl parameter
+// childEl must be a jQuery selector or html element.
 function getTaskData(childEl) {
   return $(childEl).parents('li.task').data();
 }
@@ -101,6 +108,9 @@ function handleAddTaskFormSubmit(event) {
   task.create(newTask);
 }
 
+/* 
+  Functions for handling UI events
+*/
 // Function to handle remove task clicked by user
 function handleDeleteTaskClick() {
   task.delete(getTaskData(this).key);
@@ -134,13 +144,14 @@ function showEditTaskModal() {
 }
 
 $(function onDocumentReady() {
-  // set event listeners
+  // set event listeners for UI events
   $(document).on('click', '.glyphicon-edit', showEditTaskModal);
   $(document).on('click', '.glyphicon-unchecked', handleTaskCheckClick);
   $(document).on('click', '.glyphicon-trash', handleDeleteTaskClick);
   $('#addTaskForm').on('submit', handleAddTaskFormSubmit);
   $('#editTaskForm').data(task).on('submit', handleEditTaskFormSubmit);
 
+  // set event listeners for database events
   // append task to page when added to database
   tasksRef.on('child_added', function (childSnap) {
     var taskData = childSnap.val();
