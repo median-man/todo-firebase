@@ -44,14 +44,19 @@ function renderTask(taskData) {
   if (taskData.isComplete) {
     // place completed task text inside an s element and apply styles to li
     $textSpan.empty().append($('<s>').text(text));
+    createGlyphicon('check').replaceAll($checkBox);
     $li.addClass('completed');
-    $checkBox.removeClass('glyphicon-unchecked').addClass('glyphicon-check');
   } else {
     // update the text and style li
     $textSpan.empty().text(text);
+    createGlyphicon('unchecked').replaceAll($checkBox);
     $li.removeClass('completed');
-    $checkBox.removeClass('glyphicon-check').addClass('glyphicon-unchecked');
   }
+}
+
+// Function to create a bootstrap3 glpyhicon
+function createGlyphicon(glyph) {
+  return $('<span>').addClass('glyphicon glyphicon-' + glyph);
 }
 
 // Function to create new html element for a task and append it to the task list
@@ -65,8 +70,9 @@ function appendNewTask(newTask) {
     $textSpan.text(newTask.text);
   }
   
-  var $checkBox = $('<span>').addClass('glyphicon glyphicon-' + (newTask.isComplete ? 'check' : 'unchecked'));
-  var $edit = $('<span>').addClass('glyphicon glyphicon-edit pull-right');
+  var $checkBox = newTask.isComplete ? createGlyphicon('check') : createGlyphicon('unchecked');
+  var $edit = createGlyphicon('edit').addClass('pull-right');
+  var $trash = createGlyphicon('trash').addClass('pull-right');
   var $col1 = $('<div>').addClass('col-xs-9').append($checkBox, $textSpan);
   var $col2 = $('<div>').addClass('col-xs-3').append($edit);
   var $row = $('<div>').addClass('row').append($col1, $col2);
