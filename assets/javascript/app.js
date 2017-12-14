@@ -73,14 +73,8 @@ function renderTask(taskData) {
 // Function to remove a task element
 function removeTask(key) {
   var $taskLi = $('#' + key);
-  var $collapseDiv = $taskLi.find('.collapse');
-  // fade out and remove element by collapsing it after the fade out
-  $taskLi.slideUp(function() {
-    $taskLi.remove();
-  });
-  // $collapseDiv.on('hidden.bs.collapse', function() {
-  //   $taskLi.remove();
-  // }).collapse('hide');  
+  // animate and remove the element
+  $taskLi.slideUp($taskLi.remove);
 }
 
 // Function to create new html element for a task and append it to the task list
@@ -124,7 +118,6 @@ function getTaskData(childEl) {
 /* 
   Functions for handling UI events
 */
-
 // Function adds user input from add task form
 function handleAddTaskFormSubmit(event) {
   event.preventDefault();
