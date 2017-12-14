@@ -103,8 +103,7 @@ function handleAddTaskFormSubmit(event) {
 
 // Function to handle remove task clicked by user
 function handleDeleteTaskClick() {
-  console.log(this);
-  // task.delete(getTaskData(this).key);
+  task.delete(getTaskData(this).key);
 }
 
 // Function to toggle a task's isComplete state
@@ -138,6 +137,7 @@ $(function onDocumentReady() {
   // set event listeners
   $(document).on('click', '.glyphicon-edit', showEditTaskModal);
   $(document).on('click', '.glyphicon-unchecked', handleTaskCheckClick);
+  $(document).on('click', '.glyphicon-trash', handleDeleteTaskClick);
   $('#addTaskForm').on('submit', handleAddTaskFormSubmit);
   $('#editTaskForm').data(task).on('submit', handleEditTaskFormSubmit);
 
@@ -160,6 +160,6 @@ $(function onDocumentReady() {
   // when a task is removed from the database, remove it from the page
   tasksRef.on('child_removed', function (childSnap) {
     var selector = '#' + childSnap.key;
-    $(selector).parents('li').remove();
+    $(selector).remove();
   });
 });
