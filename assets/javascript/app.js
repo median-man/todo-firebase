@@ -36,17 +36,19 @@ function renderTask(taskData) {
   var $li = $(selector);
   var $checkBox = $li.find('.glyphicon-unchecked', '.glyphicon-check');
   var $textSpan = $li.find('span').eq(1);
+  var text = ' ' + taskData.text;
 
-  taskData.text = ' ' + taskData.text;
+  // update the stored taskData
+  $li.data(taskData);
   
   if (taskData.isComplete) {
     // place completed task text inside an s element and apply styles to li
-    $textSpan.empty().append($('<s>').text(taskData.text));
+    $textSpan.empty().append($('<s>').text(text));
     $li.addClass('completed');
     $checkBox.removeClass('glyphicon-unchecked').addClass('glyphicon-check');
   } else {
     // update the text and style li
-    $textSpan.empty().text(taskData.text);
+    $textSpan.empty().text(text);
     $li.removeClass('completed');
     $checkBox.removeClass('glyphicon-check').addClass('glyphicon-unchecked');
   }
@@ -93,7 +95,8 @@ function handleAddTaskFormSubmit(event) {
 
 // Function to handle remove task clicked by user
 function handleDeleteTaskClick() {
-  task.delete(getTaskData(this).key);
+  console.log(this);
+  // task.delete(getTaskData(this).key);
 }
 
 // Function to toggle a task's isComplete state
