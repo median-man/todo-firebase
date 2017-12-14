@@ -70,6 +70,19 @@ function renderTask(taskData) {
   });  
 }
 
+// Function to remove a task element
+function removeTask(key) {
+  var $taskLi = $('#' + key);
+  var $collapseDiv = $taskLi.find('.collapse');
+  // fade out and remove element by collapsing it after the fade out
+  $taskLi.slideUp(function() {
+    $taskLi.remove();
+  });
+  // $collapseDiv.on('hidden.bs.collapse', function() {
+  //   $taskLi.remove();
+  // }).collapse('hide');  
+}
+
 // Function to create new html element for a task and append it to the task list
 function appendNewTask(newTask) {
   var $textSpan = $('<span>');
@@ -108,6 +121,10 @@ function getTaskData(childEl) {
   return $(childEl).parents('li.task').data();
 }
 
+/* 
+  Functions for handling UI events
+*/
+
 // Function adds user input from add task form
 function handleAddTaskFormSubmit(event) {
   event.preventDefault();
@@ -117,9 +134,6 @@ function handleAddTaskFormSubmit(event) {
   task.create(newTask);
 }
 
-/* 
-  Functions for handling UI events
-*/
 // Function to handle remove task clicked by user
 function handleDeleteTaskClick() {
   task.delete(getTaskData(this).key);
@@ -179,7 +193,6 @@ $(function onDocumentReady() {
 
   // when a task is removed from the database, remove it from the page
   tasksRef.on('child_removed', function (childSnap) {
-    var selector = '#' + childSnap.key;
-    $(selector).remove();
+    removeTask(childSnap.key);
   });
 });
