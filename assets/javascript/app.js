@@ -1,6 +1,5 @@
 // database globals
-var database = firebase.database();
-var tasksRef = database.ref('/tasks');
+var tasksRef = firebase.database().ref('/tasks');
 
 /* 
   task object contains methods to update database

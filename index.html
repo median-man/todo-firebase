@@ -80,12 +80,32 @@
             </div>
           </div>
         </div>
-        
+
+        <!-- Log In modal -->
+        <div class="modal fade" id="logInModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <form action="" method="POST" role="form">
+                            <legend class="h1">To Do Blaze</legend>
+                            <div class="form-group">
+                                <input type="email" class="form-control input-lg" id="email" placeholder="Email">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control input-lg" id="password" placeholder="Password">
+                            </div>
+                            <button type="submit" class="btn btn-lg btn-block btn-primary">Log In</button>
+                            <hr>
+                            <button type="button" class="btn btn-lg btn-block btn-default">Sign Up</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-
-
-    <!-- application script -->
+    <!-- application scripts -->
+    <script src="assets/javascript/auth.js"></script>
     <script src="assets/javascript/app.js"></script>
 </body>
 
