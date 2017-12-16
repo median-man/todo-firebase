@@ -1,12 +1,28 @@
 // Function to create a new user account. Returns promise containing firebase.User object.
 function createNewUser(email, password) {
   console.log('creating new user. email: ' + email + ', password: ' + password);
-  return firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+  return firebase.auth().createUserWithEmailAndPassword(email, password)
+    .catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log('failed to create account', error);
+      // ...
+    }).then(function (user) {
+      console.log('successfully created accounts', user);
+    });
+}
+
+function signInUser(email, password) {
+  console.log('signing in user. email: ' + email + ', password: ' + password);
+  return firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
     // Handle Errors here.
     var errorCode = error.code;
     var errorMessage = error.message;
-    console.log(error);
+    console.log('failed to sign in', error);    
     // ...
+  }).then(function (user) {
+    console.log('successfully signed in', user);
   });
 }
 
@@ -54,17 +70,30 @@ function initLogIn() {
     var formData = validateLogInForm();
     if (formData.isValid) {
       console.log('form data is valid.', formData);
+      signInUser(formData.email, formData.password);
     } else {
       console.log('invalid form data.', formData);
     }
     
-    $logInModal.modal('hide');
+    // $logInModal.modal('hide');
   });
 
   // user sign
   $('#signUp').on('click', function () {
     var formData = validateLogInForm();
-    console.log('sign up clicked', formData);
+    if (formData.isValid) {
+      createNewUser(formData.email, formData.password);
+    }
   });
 }
 $(document).ready(initLogIn);
+
+// test code
+$(document).ready(function () {
+  $('#email').val('johndrunner@yahoo.com');
+  $('#password').val('testtest');
+  $('#logInModal').on('shown.bs.modal', function () {
+    $(this).find('form').submit();
+  });
+
+});

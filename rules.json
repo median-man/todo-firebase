@@ -1,0 +1,8 @@
+// These rules require authentication
+{
+    "rules": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+  
